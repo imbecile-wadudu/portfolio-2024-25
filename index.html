@@ -1,191 +1,478 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Krishna's Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Montserrat', Arial, sans-serif;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Krishna's Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Montserrat', Arial, sans-serif;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    min-height: 100%;
+    color: #fff;
+    position: relative;
+    overflow-x: hidden;
+    background: transparent;
+    cursor: none; /* hide default cursor */
+  }
+  #bg-video {
+    position: fixed;
+    right: 0; bottom: 0;
+    min-width: 100vw; min-height: 100vh;
+    object-fit: cover;
+    filter: brightness(0.7) blur(2px) grayscale(30%);
+    z-index: -3;
+  }
+  #particle-canvas, #ripple-canvas {
+    position: fixed; top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: -2;
+  }
+  #glitch {
+    pointer-events: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    mix-blend-mode: screen;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.03),
+      rgba(255,255,255,0.1) 2px,
+      rgba(255,255,255,0.03) 5px
+    );
+    animation: flicker 0.15s infinite alternate;
+    z-index: 9999;
+  }
+  @keyframes flicker {
+    0% { opacity: 0.1; }
+    100% { opacity: 0.3; }
+  }
+  nav {
+    position: fixed;
+    top: 0; width: 100%;
+    background: rgba(18, 22, 36, 0.98);
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 12px 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.16);
+    z-index: 10000;
+  }
+  nav a {
+    color: #00ffd4;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 8px 16px;
+    border-radius: 25px;
+    transition: background 0.3s, color 0.3s;
+  }
+  nav a:hover {
+    background: #00ffd4;
+    color: #121624;
+    box-shadow: 0 2px 10px #00ffd4a0;
+  }
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    z-index: 11001;
+  }
+  .hamburger div {
+    width: 28px;
+    height: 3px;
+    background: #00ffd4;
+    margin: 5px 0;
+    border-radius: 2px;
+    transition: 0.4s;
+  }
+  nav.responsive {
+    flex-direction: column;
+    position: fixed;
+    top: 50px;
+    width: 100%;
+    background: rgba(18, 22, 36, 0.98);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    padding: 20px 0;
+    gap: 20px;
+    z-index: 10000;
+  }
+  section {
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 20px 30px 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation-fill-mode: forwards;
+    animation-name: fadeInSlide;
+    animation-duration: 0.8s;
+  }
+  #about   { animation-delay: 0.5s; }
+  #projects { animation-delay: 0.7s; }
+  #contact { animation-delay: 0.9s; }
+  @keyframes fadeInSlide {
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
-    html, body {
-      min-height: 100%;
-      color: #fff;
-      position: relative;
-      overflow-x: hidden;
-      background: transparent;
-    }
-    #bg-video {
-      position: fixed;
-      right: 0;
-      bottom: 0;
-      min-width: 100vw;
-      min-height: 100vh;
-      object-fit: cover;
-      z-index: -1;
-      filter: brightness(0.7) blur(2px) grayscale(30%);
-      background-color: transparent;
-    }
-    nav {
-      position: fixed;
-      top: 0;
+  }
+  .profile-pic {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    border: 4px solid #00ffd4;
+    box-shadow: 0 0 25px #00ffd4a0;
+    margin-bottom: 20px;
+    object-fit: cover;
+    animation: pulseGlow 2.5s ease-in-out infinite alternate;
+    background: #222;
+  }
+  @keyframes pulseGlow {
+    from { box-shadow: 0 0 10px #00ffd466; }
+    to { box-shadow: 0 0 30px #00ffd4ff; }
+  }
+  h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    background: linear-gradient(90deg, #00ffd4, #00a9a1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  h1::after {
+    content: '|';
+    position: absolute;
+    right: 0;
+    animation: blinkCursor 1s steps(2) infinite;
+  }
+  @keyframes blinkCursor {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #fff;
+    text-shadow: 0 0 15px #00ffd4aa;
+  }
+  p {
+    font-size: 1.15rem;
+    max-width: 700px;
+    margin: 0 auto 18px auto;
+    color: #ededed;
+    opacity: 0.97;
+    letter-spacing: 0.02em;
+  }
+  .projects {
+    margin-top: 18px;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 1px 10px #00ffddb0;
+    cursor: default;
+    letter-spacing: 0.25px;
+    padding: 20px 30px;
+    border-radius: 16px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: inset 0 0 10px #00ffd4a0;
+  }
+  .projects:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px #00ffd4c0;
+  }
+  .contact-links {
+    margin-top: 18px;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .contact-links a {
+    color: #121624;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.65);
+    padding: 10px 24px;
+    border-radius: 26px;
+    transition: background 0.25s, color 0.25s, box-shadow 0.35s, transform 0.3s ease;
+    font-weight: 600;
+    box-shadow: 0 2px 12px #fff3;
+    border: 1px solid #e0e0e0;
+    transform-origin: center;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+  }
+  .contact-links a:hover {
+    background: #00ffd4;
+    color: #121624;
+    box-shadow: 0 8px 20px #00ffd4c0;
+    transform: scale(1.15);
+  }
+  @media (max-width: 600px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.3rem; }
+    .profile-pic { width: 120px; height: 120px; }
+    nav.responsive {
       width: 100%;
-      background: rgba(18, 22, 36, 0.98);
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 12px 0;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.16);
-      z-index: 1000;
-      transition: background 0.4s;
-    }
-    nav a {
-      color: #00ffd4;
-      text-decoration: none;
-      font-size: 18px;
-      padding: 8px 16px;
-      border-radius: 25px;
-      transition: background 0.3s, color 0.3s;
-    }
-    nav a:hover {
-      background: #00ffd4;
-      color: #121624;
-      box-shadow: 0 2px 10px #00ffd4a0;
-    }
-    section {
-      min-height: 90vh;
-      display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 60px 20px 30px 20px;
-      background: transparent;
+      position: fixed;
+      top: 50px;
+      gap: 15px;
+      background: rgba(18, 22, 36, 0.98);
+      padding: 10px 0;
     }
-    .profile-pic {
-      width: 170px;
-      height: 170px;
-      border-radius: 50%;
-      border: 4px solid #00ffd4;
-      box-shadow: 0 6px 24px #00ffd480;
-      margin-bottom: 20px;
-      object-fit: cover;
-      background: #222;
-    }
-    h1 {
-      font-size: 2.8rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-      color: #00ffd4;
-      text-shadow: 0 2px 20px #00ffd4a0;
-    }
-    h2 {
-      font-size: 2rem;
-      margin-bottom: 12px;
-      color: #fff;
-    }
-    p {
-      font-size: 1.15rem;
-      max-width: 700px;
-      margin: 0 auto 18px auto;
-      color: #ededed;
-      opacity: 0.97;
-    }
-    .projects {
-      margin-top: 18px;
-      font-size: 1.18rem;
-      color: #fff;
-      padding: 42px 0 0 0;
-      font-weight: bold;
-      letter-spacing: 0.3px;
-      text-shadow: 0 1px 10px #0ff2;
-    }
-    .contact-links {
-      margin-top: 18px;
+    .hamburger {
       display: flex;
-      gap: 30px;
-      justify-content: center;
-      font-size: 1.25rem;
-      flex-wrap: wrap;
     }
-    .contact-links a {
-      color: #121624;
-      text-decoration: none;
-      background: rgba(255, 255, 255, 0.65);
-      padding: 10px 24px;
-      border-radius: 26px;
-      transition: background 0.25s, color 0.25s, box-shadow 0.35s;
-      font-weight: 600;
-      box-shadow: 0 2px 12px #fff3;
-      border: 1px solid #e0e0e0;
-    }
-    .contact-links a:hover {
-      background: #00ffd4;
-      color: #121624;
-      box-shadow: 0 2px 16px #00ffd4a0;
-      border: 1px solid #00ffd4;
-    }
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 2rem;
-      }
-      h2 {
-        font-size: 1.3rem;
-      }
-      .profile-pic {
-        width: 120px;
-        height: 120px;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <video autoplay muted loop id="bg-video" playsinline>
-    <source src="bg.mp4" type="video/mp4" />
-    Your browser does not support HTML5 video.
-  </video>
 
-  <nav>
-    <a href="#home">Home</a>
-    <a href="#about">About</a>
-    <a href="#projects">Projects</a>
-    <a href="#contact">Contact</a>
-  </nav>
+<video autoplay muted loop playsinline id="bg-video" poster="poster.jpg">
+  <source src="bg.mp4" type="video/mp4" />
+  Your browser does not support HTML5 video.
+</video>
 
-  <section id="home">
-    <img src="profile.jpg" alt="Profile Picture" class="profile-pic" />
-    <h1>Krishna</h1>
-    <p>Undergraduate Computer Science student passionate about Cybersecurity and AI/ML.</p>
-  </section>
+<canvas id="particle-canvas"></canvas>
+<canvas id="ripple-canvas"></canvas>
+<div id="glitch"></div>
 
-  <section id="about">
-    <h2>About Me</h2>
-    <p>
-      I am a Computer Science and Engineering undergraduate at SRMIST, KTR with a strong interest in
-      Cybersecurity and Artificial Intelligence/Machine Learning.
-      I am eager to contribute to research projects and gain practical experience through internships.
-    </p>
-  </section>
+<div class="hamburger" id="hamburger" aria-label="Toggle navigation menu" role="button" tabindex="0">
+  <div></div><div></div><div></div>
+</div>
 
-  <section id="projects">
-    <h2>Projects</h2>
-    <div class="projects">
-      No projects as of now - stay tuned!
-    </div>
-  </section>
+<nav id="navbar">
+  <a href="#home">Home</a>
+  <a href="#about">About</a>
+  <a href="#projects">Projects</a>
+  <a href="#contact">Contact</a>
+</nav>
 
-  <section id="contact">
-    <h2>Contact Me</h2>
-    <div class="contact-links">
-      <a href="mailto:krishna@example.com">Email</a>
-      <a href="https://linkedin.com/in/krishna" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      <a href="https://github.com/krishna" target="_blank" rel="noopener noreferrer">GitHub</a>
-    </div>
-  </section>
+<section id="home">
+  <img src="profile.jpg" alt="Profile Picture" class="profile-pic" />
+  <h1></h1>
+  <p>Undergraduate Computer Science student passionate about Cybersecurity and AI/ML.</p>
+</section>
+
+<section id="about">
+  <h2>About Me</h2>
+  <p>
+    I am a Computer Science and Engineering undergraduate at SRMIST, KTR with a strong interest in
+    Cybersecurity and Artificial Intelligence/Machine Learning.
+    I am eager to contribute to research projects and gain practical experience through internships.
+  </p>
+</section>
+
+<section id="projects">
+  <h2>Projects</h2>
+  <div class="projects" tabindex="0">
+    No projects as of now — stay tuned!
+  </div>
+</section>
+
+<section id="contact">
+  <h2>Contact Me</h2>
+  <div class="contact-links">
+    <a href="mailto:krishna@example.com">Email</a>
+    <a href="https://linkedin.com/in/krishna" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    <a href="https://github.com/krishna" target="_blank" rel="noopener noreferrer">GitHub</a>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
+<script>
+  // Three.js particle system
+  const canvas = document.getElementById('particle-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  camera.position.z = 50;
+
+  const particleCount = 1500;
+  const geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(particleCount * 3);
+
+  for(let i = 0; i < particleCount * 3; i++) {
+    positions[i] = (Math.random() - 0.5) * 100;
+  }
+
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const material = new THREE.PointsMaterial({ color: 0x00ffd4, size: 0.2, sizeAttenuation: true });
+  const points = new THREE.Points(geometry, material);
+
+  scene.add(points);
+
+  function animate() {
+    requestAnimationFrame(animate);
+    points.rotation.y += 0.002;
+    points.rotation.x += 0.0015;
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // Hamburger menu toggle
+  const hamburger = document.getElementById('hamburger');
+  const navbar = document.getElementById('navbar');
+  hamburger.addEventListener('click', () => {
+    navbar.classList.toggle('responsive');
+  });
+  hamburger.addEventListener('keypress', e => {
+    if(e.key === 'Enter' || e.key === ' ') {
+      navbar.classList.toggle('responsive');
+    }
+  });
+
+  // Typed animation for heading
+  const heading = document.querySelector('#home h1');
+  const nameText = "Krishna";
+  heading.textContent = '';
+  let i = 0;
+  function typeWriter() {
+    if(i < nameText.length) {
+      heading.textContent += nameText.charAt(i);
+      i++;
+      setTimeout(typeWriter, 150);
+    }
+  }
+  typeWriter();
+
+  // Custom cursor trail dots
+  const cursorDots = [];
+  for(let i=0; i<12; i++) {
+    const dot = document.createElement('div');
+    dot.style.position = 'fixed';
+    dot.style.borderRadius = '50%';
+    dot.style.pointerEvents = 'none';
+    dot.style.backgroundColor = 'rgba(0,255,212,0.8)';
+    dot.style.opacity = (1 - i/12).toString();
+    const size = 25 - i*1.5;
+    dot.style.width = size + 'px';
+    dot.style.height = size + 'px';
+    dot.style.zIndex = '10000';
+    dot.style.transform = 'translate(-50%, -50%)';
+    document.body.appendChild(dot);
+    cursorDots.push(dot);
+  }
+
+  let mouseX = window.innerWidth/2;
+  let mouseY = window.innerHeight/2;
+  window.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  function animateCursor() {
+    let x = mouseX;
+    let y = mouseY;
+    cursorDots.forEach((dot, idx) => {
+      dot.style.left = x + 'px';
+      dot.style.top = y + 'px';
+      x += (mouseX - x)*0.2;
+      y += (mouseY - y)*0.2;
+    });
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  // Voice navigation activation on key 'v'
+  const navLinks = document.querySelectorAll('nav a');
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(SR){
+    const recognition = new SR();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.continuous = false;
+    recognition.onresult = (e) => {
+      const spoken = e.results[0][0].transcript.toLowerCase();
+      navLinks.forEach(link => {
+        if(spoken.includes(link.textContent.toLowerCase()))
+          link.click();
+      });
+    };
+    window.addEventListener('keydown', (e) => {
+      if(e.key==='v'){
+        recognition.start();
+        alert('Voice navigation enabled: say Home, About, Projects, or Contact.');
+      }
+    });
+  }
+
+  // Water ripple effect canvas setup
+  const rippleCanvas = document.getElementById('ripple-canvas');
+  const ctx = rippleCanvas.getContext('2d');
+  function resizeRipple() {
+    rippleCanvas.width = window.innerWidth;
+    rippleCanvas.height = window.innerHeight;
+  }
+  resizeRipple();
+  window.addEventListener('resize', resizeRipple);
+
+  const ripples = [];
+  class Ripple {
+    constructor(x,y){
+      this.x = x;
+      this.y = y;
+      this.radius = 20;  // Intense ripple starts bigger
+      this.alpha = 0.7;  // Stronger opacity
+      this.lineWidth = 5;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x,this.y,this.radius,0,2*Math.PI);
+      ctx.strokeStyle = `rgba(0,255,212,${this.alpha})`;
+      ctx.lineWidth = this.lineWidth;
+      ctx.shadowColor = 'rgba(0,255,212,0.9)';
+      ctx.shadowBlur = 20;
+      ctx.stroke();
+    }
+    update(){
+      this.radius += 6;  // Faster radius growth
+      this.alpha -= 0.03; // Slower fade
+      this.lineWidth = 5 + this.radius / 5;
+    }
+  }
+
+  window.addEventListener('click', e => {
+    ripples.push(new Ripple(e.clientX,e.clientY));
+  });
+
+  function animateRipples(){
+    ctx.clearRect(0,0,rippleCanvas.width,rippleCanvas.height);
+    for(let i = ripples.length - 1; i >=0; i--){
+      ripples[i].draw();
+      ripples[i].update();
+      if(ripples[i].alpha <= 0) ripples.splice(i,1);
+    }
+    requestAnimationFrame(animateRipples);
+  }
+  animateRipples();
+</script>
+
 </body>
 </html>
